@@ -31,6 +31,7 @@
         "lucide-vue-next": "^1.0.0",
         "tailwind-merge": "^3.5.0",
         "three": "^0.183.2",
-        "vue-confetti": "^2.3.0"
+        "vue-confetti": "^2.3.0",
+        "ziggy-js": "^2.6.2"
     }
 }
