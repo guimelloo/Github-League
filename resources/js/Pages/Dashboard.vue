@@ -15,6 +15,10 @@ const props = defineProps({
     },
 });
 
+const redirectToGithub = () => {
+    window.location.href = route('github.redirect');
+};
+
 const isGithubConnected = (profile) => {
     return profile && profile.github_username;
 };
@@ -154,9 +158,9 @@ const createPixelEffect = () => {
                 <div v-else class="text-center space-y-8">
                     <div class="text-6xl font-black text-cyan-400 font-mono" style="text-shadow: 0 0 40px rgba(0, 136, 204, 1);">GAME OVER</div>
                     <p class="text-cyan-300 text-lg font-mono">PLEASE CONNECT YOUR GITHUB</p>
-                    <Link :href="route('github.redirect')" class="inline-block px-8 py-4 border-2 border-cyan-400 text-cyan-400 font-mono font-bold hover:bg-cyan-400 hover:text-black transition-all duration-300" style="text-shadow: 0 0 10px rgba(0, 136, 204, 0.5); box-shadow: 0 0 20px rgba(0, 136, 204, 0.3);">
+                    <button @click="redirectToGithub" class="inline-block px-8 py-4 border-2 border-cyan-400 text-cyan-400 font-mono font-bold hover:bg-cyan-400 hover:text-black transition-all duration-300" style="text-shadow: 0 0 10px rgba(0, 136, 204, 0.5); box-shadow: 0 0 20px rgba(0, 136, 204, 0.3);">
                         ▶ START GAME
-                    </Link>
+                    </button>
                 </div>
             </div>
         </div>
