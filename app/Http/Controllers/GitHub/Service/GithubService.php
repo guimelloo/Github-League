@@ -42,27 +42,41 @@ class GithubService
 
     public function getScore($username)
     {
-        $user = $this->client->api('user')->show($username);
-        $repos = $this->client->api('user')->repositories($username);
+        try {
+            $user = $this->client->api('user')->show($username);
+            $repos = $this->client->api('user')->repositories($username);
 
-        $stars = 0;
-        $forks = 0;
-        $lines = 0;
+            // If user has no repos, return 0
+            if (empty($repos) || count($repos) === 0) {
+                return 0;
+            }
 
-        foreach ($repos as $repo) {
-            $stars += $repo['stargazers_count'];
-            $forks += $repo['forks_count'];
+            $stars = 0;
+            $forks = 0;
+            $lines = 0;
 
-            $languages = $this->client->api('repo')->languages(
-                $username,
-                $repo['name']
-            );
+            foreach ($repos as $repo) {
+                $stars += $repo['stargazers_count'] ?? 0;
+                $forks += $repo['forks_count'] ?? 0;
 
-            $lines += array_sum($languages);
+                try {
+                    $languages = $this->client->api('repo')->languages(
+                        $username,
+                        $repo['name']
+                    );
+                    $lines += array_sum($languages);
+                } catch (\Exception $e) {
+                    // Skip if unable to get languages
+                    continue;
+                }
+            }
+
+            $score = ($lines / count($repos)) * 2 + ($stars * 2) + $forks;
+
+            return round($score);
+        } catch (\Exception $e) {
+            // If any error occurs, return 0
+            return 0;
         }
-
-        $score = $lines / count($repos) * 2 + $stars * 2 + $forks;
-
-        return round($score);
     }
 }

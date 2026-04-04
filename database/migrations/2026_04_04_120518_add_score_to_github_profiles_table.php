@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('github_profiles', function (Blueprint $table) {
-            $table->integer('score')->default(0);
+            $table->integer('score')->nullable()->default(0);
         });
     }
 
