@@ -11,23 +11,16 @@ const showingNavigationDropdown = ref(false);
 </script>
 
 <template>
-    <div class="min-h-screen bg-black text-white">
-        <!-- Gradient Background -->
-        <div class="fixed inset-0 -z-10">
-            <div class="absolute inset-0 bg-gradient-to-br from-black via-blue-950 to-black"></div>
-            <div class="absolute top-0 right-0 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
-            <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
-        </div>
-
+    <div class="min-h-screen bg-slate-950 text-slate-100">
         <!-- Navigation -->
-        <nav class="fixed top-0 w-full z-50 border-b border-cyan-500/20 bg-slate-900/80 backdrop-blur-md">
+        <nav class="fixed top-0 w-full z-50 border-b border-slate-700 bg-slate-900">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex h-16 justify-between items-center">
                     <!-- Logo -->
                     <div class="flex items-center">
                         <Link :href="route('leaderboard')" class="flex items-center gap-2">
-                            <div class="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-                                GITHUBLEAGUE
+                            <div class="text-xl font-bold text-slate-100">
+                                GitHub League
                             </div>
                         </Link>
                     </div>
@@ -37,7 +30,6 @@ const showingNavigationDropdown = ref(false);
                         <NavLink
                             :href="route('dashboard')"
                             :active="route().current('dashboard')"
-                            class="text-gray-300 hover:text-cyan-300 transition"
                         >
                             Dashboard
                         </NavLink>
@@ -47,7 +39,7 @@ const showingNavigationDropdown = ref(false);
                     <div class="hidden sm:flex items-center">
                         <Dropdown align="right" width="48">
                             <template #trigger>
-                                <button class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-cyan-500/30 hover:border-cyan-500 transition text-gray-300 hover:text-cyan-300">
+                                <button class="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-slate-600 hover:border-slate-500 transition text-slate-300 hover:text-slate-100">
                                     {{ $page.props.auth.user.name }}
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -56,10 +48,10 @@ const showingNavigationDropdown = ref(false);
                             </template>
 
                             <template #content>
-                                <DropdownLink :href="route('profile.edit')" class="text-gray-300 hover:text-cyan-300">
+                                <DropdownLink :href="route('profile.edit')">
                                     Profile
                                 </DropdownLink>
-                                <DropdownLink :href="route('logout')" method="post" as="button" class="text-gray-300 hover:text-cyan-300">
+                                <DropdownLink :href="route('logout')" method="post" as="button">
                                     Log Out
                                 </DropdownLink>
                             </template>
@@ -67,7 +59,7 @@ const showingNavigationDropdown = ref(false);
                     </div>
 
                     <!-- Mobile Menu Button -->
-                    <button @click="showingNavigationDropdown = !showingNavigationDropdown" class="sm:hidden text-cyan-400">
+                    <button @click="showingNavigationDropdown = !showingNavigationDropdown" class="sm:hidden text-slate-400 hover:text-slate-100">
                         <Menu v-if="!showingNavigationDropdown" :size="24" />
                         <X v-else :size="24" />
                     </button>
@@ -75,7 +67,7 @@ const showingNavigationDropdown = ref(false);
             </div>
 
             <!-- Mobile Navigation -->
-            <div v-if="showingNavigationDropdown" class="sm:hidden border-t border-cyan-500/20">
+            <div v-if="showingNavigationDropdown" class="sm:hidden border-t border-slate-700">
                 <div class="px-4 py-3 space-y-2">
                     <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                         Dashboard
@@ -91,9 +83,9 @@ const showingNavigationDropdown = ref(false);
         </nav>
 
         <!-- Page Header -->
-        <header v-if="$slots.header" class="mt-16 border-b border-cyan-500/20 bg-slate-900/50 backdrop-blur-md">
+        <header v-if="$slots.header" class="mt-16 border-b border-slate-700 bg-slate-900">
             <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-                <h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+                <h2 class="text-3xl font-bold text-slate-100">
                     <slot name="header" />
                 </h2>
             </div>
