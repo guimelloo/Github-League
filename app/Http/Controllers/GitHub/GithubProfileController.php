@@ -25,17 +25,21 @@ class GithubProfileController extends Controller
 
     public function callback()
     {
-        $githubUser = Socialite::driver('github')->user();
-        $data = [
-            'username' => $githubUser->getNickname(),
-            'token' => $githubUser->token,
-            'avatar' => $githubUser->getAvatar(),
-        ];
+        try {
+            $githubUser = Socialite::driver('github')->user();
+            
+            $data = [
+                'username' => $githubUser->getNickname(),
+                'token' => $githubUser->token,
+                'avatar' => $githubUser->getAvatar(),
+            ];
 
-        $this->githubService->saveGithubData(Auth::id(), $data);
+            $this->githubService->saveGithubData(Auth::id(), $data);
 
-        Inertia::location('githubProfile', $data);
-
-        return redirect('/dashboard')->with('success', 'GitHub conectado com sucesso!');
+            return redirect('/dashboard')->with('success', 'GitHub conectado com sucesso!');
+        } catch (\Exception $e) {
+            \Log::error('GitHub OAuth Error: ' . $e->getMessage());
+            return redirect('/dashboard')->with('error', 'Erro ao conectar GitHub: ' . $e->getMessage());
+        }
     }
 }
