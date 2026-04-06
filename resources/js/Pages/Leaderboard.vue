@@ -1,13 +1,17 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
-import { Trophy, Medal, Award } from 'lucide-vue-next';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
+import { Trophy, Medal, Award, Flame, X } from 'lucide-vue-next';
 
 const props = defineProps({
     users: Array,
     highestScoringUsers: Array,
 });
+
+const page = usePage();
+const showPositionModal = ref(false);
+const currentUserPosition = ref(null);
 
 // Processar dados
 const highlights = computed(() => {
@@ -17,6 +21,7 @@ const highlights = computed(() => {
         score: user.github_profile?.score || 0,
         avatar_url: user.github_profile?.avatar_url,
         github_username: user.github_profile?.github_username,
+        streak: user.streak || 0,
     }));
 });
 
@@ -44,6 +49,17 @@ const getMedalColor = (position) => {
     if (position === 3) return 'text-orange-500';
     return 'text-blue-500';
 };
+
+// Detectar quando o usuário atual está no top 3 com streak
+watch(() => highlights.value, (newHighlights) => {
+    const currentUserId = page.props.auth.user?.id;
+    const userInTop3 = newHighlights.find(u => u.id === currentUserId);
+    
+    if (userInTop3 && userInTop3.streak > 0) {
+        currentUserPosition.value = newHighlights.findIndex(u => u.id === currentUserId) + 1;
+        showPositionModal.value = true;
+    }
+}, { immediate: true });
 </script>
 
 <template>
@@ -93,8 +109,8 @@ const getMedalColor = (position) => {
                             </a>
                         </div>
 
-                        <!-- NAME -->
-                        <div class="mb-1">
+                        <!-- NAME WITH STREAK BADGE -->
+                        <div class="mb-1 flex items-center justify-center gap-2">
                             <a
                                 :href="`https://github.com/${player.github_username}`"
                                 target="_blank"
@@ -103,6 +119,10 @@ const getMedalColor = (position) => {
                             >
                                 {{ player.name }}
                             </a>
+                            <div v-if="player.streak > 0" class="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/50 rounded-full">
+                                <Flame :size="14" class="text-orange-500" />
+                                <span class="text-xs font-bold text-orange-500">{{ player.streak }} day<span v-if="player.streak !== 1">s</span></span>
+                            </div>
                         </div>
 
                         <!-- GITHUB -->
@@ -191,7 +211,56 @@ const getMedalColor = (position) => {
                         </div>
                     </div>
                 </div>
+
+                <!-- POSITION MODAL -->
+                <Transition name="fade">
+                    <div v-if="showPositionModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                        <div class="bg-slate-900 border border-orange-500/50 rounded-lg p-8 max-w-md mx-4 relative">
+                            <!-- CLOSE BUTTON -->
+                            <button
+                                @click="showPositionModal = false"
+                                class="absolute top-4 right-4 text-slate-400 hover:text-slate-200 transition"
+                            >
+                                <X :size="24" />
+                            </button>
+
+                            <!-- CONTENT -->
+                            <div class="text-center">
+                                <div class="mb-4 flex justify-center">
+                                    <Flame :size="48" class="text-orange-500 animate-pulse" />
+                                </div>
+                                <h2 class="text-2xl font-bold text-slate-100 mb-2">
+                                    On Fire! 🔥
+                                </h2>
+                                <p class="text-slate-300 mb-6">
+                                    You're in the <span class="font-bold text-orange-500">#{{ currentUserPosition }}</span> position with an amazing streak!
+                                </p>
+                                <div class="bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/50 rounded-lg p-4 mb-6">
+                                    <p class="text-sm text-slate-300">Keep up the great work and maintain your position!</p>
+                                </div>
+                                <button
+                                    @click="showPositionModal = false"
+                                    class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg transition"
+                                >
+                                    Got it!
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </Transition>
             </div>
         </div>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>

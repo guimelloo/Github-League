@@ -25,35 +25,17 @@ class GithubProfileController extends Controller
 
     public function callback()
     {
-        try {
-            \Log::info('GitHub OAuth callback started for user ' . Auth::id());
-            
-            $githubUser = Socialite::driver('github')->user();
-            \Log::info('GitHub user retrieved: ' . $githubUser->getNickname());
+        $githubUser = Socialite::driver('github')->user();
+        $data = [
+            'username' => $githubUser->getNickname(),
+            'token' => $githubUser->token,
+            'avatar' => $githubUser->getAvatar(),
+        ];
 
-            if (!$githubUser) {
-                throw new \Exception('Failed to retrieve GitHub user data');
-            }
+        $this->githubService->saveGithubData(Auth::id(), $data);
 
-            $data = [
-                'username' => $githubUser->getNickname(),
-                'token' => $githubUser->token,
-                'avatar' => $githubUser->getAvatar(),
-            ];
+        Inertia::location('githubProfile', $data);
 
-            \Log::info('Saving GitHub data for user ' . Auth::id());
-            $this->githubService->saveGithubData(Auth::id(), $data);
-
-            \Log::info('GitHub data saved successfully for user ' . Auth::id());
-
-            Inertia::location('githubProfile', $data);
-
-            return redirect('/dashboard')->with('success', 'GitHub conectado com sucesso!');
-        } catch (\Exception $e) {
-            \Log::error('GitHub OAuth callback error for user ' . Auth::id() . ': ' . $e->getMessage());
-            \Log::error('Stack trace: ' . $e->getTraceAsString());
-            
-            return redirect('/dashboard')->with('error', 'Erro ao conectar com GitHub: ' . $e->getMessage());
-        }
+        return redirect('/dashboard')->with('success', 'GitHub conectado com sucesso!');
     }
 }

@@ -19,4 +19,9 @@ class GithubProfile extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function scoreHistory()
+    {
+        return $this->hasMany(ScoreHistory::class);
+    }
 }

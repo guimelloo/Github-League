@@ -46,7 +46,6 @@ class GithubService
             $user = $this->client->api('user')->show($username);
             $repos = $this->client->api('user')->repositories($username);
 
-            // If user has no repos, return 0
             if (empty($repos) || count($repos) === 0) {
                 return 0;
             }
@@ -66,7 +65,6 @@ class GithubService
                     );
                     $lines += array_sum($languages);
                 } catch (\Exception $e) {
-                    // Skip if unable to get languages
                     continue;
                 }
             }
