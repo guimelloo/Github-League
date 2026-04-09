@@ -1,7 +1,11 @@
-.PHONY: help docker-up docker-down docker-build docker-logs docker-shell-app docker-shell-db docker-artisan docker-migrate docker-seed docker-fresh migration model controller
+.PHONY: help docker-up docker-down docker-build docker-logs docker-shell-app docker-shell-db docker-artisan docker-migrate docker-seed docker-fresh migration model controller env-local env-docker clear-cache
 
 help:
 	@echo "GitHub League - Docker Commands"
+	@echo ""
+	@echo "Environment:"
+	@echo "  make env-local          - Use local development env (.env.local)"
+	@echo "  make env-docker         - Use Docker/production env (.env.docker)"
 	@echo ""
 	@echo "Setup & Management:"
 	@echo "  make docker-build       - Build Docker images"
@@ -102,3 +106,35 @@ controller:
 		docker-compose exec app php artisan make:controller $(shell echo $(NAME) | sed 's/\b\(.\)/\u\1/g')Controller; \
 		echo "✅ Controller created: $(shell echo $(NAME) | sed 's/\b\(.\)/\u\1/g')Controller"; \
 	fi
+
+# Environment Switching
+env-local:
+	@if [ -f .env.local ]; then \
+		cp .env .env.docker; \
+		cp .env.local .env; \
+		docker-compose exec -T app php artisan config:clear; \
+		docker-compose exec -T app php artisan cache:clear; \
+		echo "✅ Switched to LOCAL environment (.env.local)"; \
+		echo "   GitHub OAuth: Localhost Dev App"; \
+		echo "   APP_URL: http://localhost"; \
+	else \
+		echo "❌ Error: .env.local file not found"; \
+	fi
+
+env-docker:
+	@if [ -f .env.docker ]; then \
+		cp .env .env.local; \
+		cp .env.docker .env; \
+		docker-compose exec -T app php artisan config:clear; \
+		docker-compose exec -T app php artisan cache:clear; \
+		echo "✅ Switched to DOCKER/PRODUCTION environment (.env.docker)"; \
+		echo "   GitHub OAuth: Production App"; \
+		echo "   APP_URL: https://github-league-master-zbeui2.free.laravel.cloud"; \
+	else \
+		echo "❌ Error: .env.docker file not found"; \
+	fi
+
+clear-env-backup:
+	@echo "Clearing environment backups..."
+	@rm -f .env.local .env.docker
+	@echo "✅ Backups removed"
