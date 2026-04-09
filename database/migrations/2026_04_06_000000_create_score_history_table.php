@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('position'); // 1º, 2º, 3º lugar naquele dia
             $table->date('recorded_at'); // Data do registro
             $table->timestamps();
-            
+
             // Index para facilitar queries
             $table->index(['github_profile_id', 'recorded_at']);
             $table->unique(['github_profile_id', 'recorded_at']); // Um registro por dia por usuário

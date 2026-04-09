@@ -33,6 +33,18 @@ const showingNavigationDropdown = ref(false);
                         >
                             Dashboard
                         </NavLink>
+                        <NavLink
+                            :href="route('divisions')"
+                            :active="route().current('divisions')"
+                        >
+                            Divisions
+                        </NavLink>
+                        <NavLink
+                            :href="route('leaderboard')"
+                            :active="route().current('leaderboard')"
+                        >
+                            Leaderboard
+                        </NavLink>
                     </div>
 
                     <!-- User Dropdown -->
@@ -71,6 +83,12 @@ const showingNavigationDropdown = ref(false);
                 <div class="px-4 py-3 space-y-2">
                     <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                         Dashboard
+                    </ResponsiveNavLink>
+                    <ResponsiveNavLink :href="route('divisions')" :active="route().current('divisions')">
+                        Divisions
+                    </ResponsiveNavLink>
+                    <ResponsiveNavLink :href="route('leaderboard')" :active="route().current('leaderboard')">
+                        Leaderboard
                     </ResponsiveNavLink>
                     <ResponsiveNavLink :href="route('profile.edit')">
                         Profile
