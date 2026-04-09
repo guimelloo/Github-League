@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import { Trophy, Award, Crown } from 'lucide-vue-next';
 
 defineProps({
     divisions: {
@@ -8,6 +9,16 @@ defineProps({
         required: true,
     },
 });
+
+const getDivisionIcon = (division) => {
+    if (!division) return null;
+    const iconMap = {
+        'bronze': Trophy,
+        'silver': Award,
+        'gold': Crown,
+    };
+    return iconMap[division.icon] || Trophy;
+};
 </script>
 
 <template>
@@ -28,7 +39,6 @@ defineProps({
 
                 <!-- DIVISIONS GRID/CARDS -->
                 <div class="space-y-8">
-                    <!-- SÉRIE A -->
                     <div v-for="division in divisions" :key="division.id" class="bg-slate-900 border border-slate-700 rounded-lg overflow-hidden shadow-lg">
                         <!-- DIVISION HEADER -->
                         <div
@@ -36,7 +46,11 @@ defineProps({
                             class="px-6 py-4 border-b border-slate-700"
                         >
                             <div class="flex items-center gap-3">
-                                <span class="text-3xl">{{ division.icon }}</span>
+                                <component
+                                    :is="getDivisionIcon(division)"
+                                    :size="32"
+                                    class="flex-shrink-0"
+                                />
                                 <div>
                                     <h2 class="text-2xl font-bold text-white">{{ division.name }}</h2>
                                     <p v-if="division.min_score && division.max_score" class="text-sm text-slate-200">

@@ -14,19 +14,19 @@ class UpdateDivisionSeeder extends Seeder
     {
         // Atualizar Division C
         Division::where('order', 1)->update([
-            'name' => 'Divisão C',
+            'name' => 'Division C',
             'icon' => 'bronze',
         ]);
 
         // Atualizar Division B
         Division::where('order', 2)->update([
-            'name' => 'Divisão B',
+            'name' => 'Division B',
             'icon' => 'silver',
         ]);
 
         // Atualizar Division A
         Division::where('order', 3)->update([
-            'name' => 'Divisão A',
+            'name' => 'Division A',
             'icon' => 'gold',
         ]);
     }
