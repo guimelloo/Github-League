@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref, onMounted, computed } from 'vue';
+import { Trophy, Award, Crown } from 'lucide-vue-next';
 import gsap from 'gsap';
 
 const props = defineProps({
@@ -21,6 +22,16 @@ const redirectToGithub = () => {
 
 const isGithubConnected = (profile) => {
     return profile && profile.github_username;
+};
+
+const getDivisionIcon = (division) => {
+    if (!division) return null;
+    const iconMap = {
+        'bronze': Trophy,
+        'silver': Award,
+        'gold': Crown,
+    };
+    return iconMap[division.icon] || Trophy;
 };
 
 const scoreCounter = ref(0);
@@ -78,6 +89,23 @@ const createPixelEffect = () => {
                         <div>
                             <div class="text-sm uppercase tracking-widest text-slate-500 font-medium mb-2">Player</div>
                             <div class="text-3xl font-bold text-slate-100">{{ $page.props.auth.user.name }}</div>
+                        </div>
+
+                        <!-- DIVIDER -->
+                        <div class="border-t border-slate-700"></div>
+
+                        <!-- DIVISION -->
+                        <div v-if="props.githubProfile.division" class="flex items-center gap-4">
+                            <div class="flex-1">
+                                <div class="text-sm uppercase tracking-widest text-slate-500 font-medium mb-2">Divisão</div>
+                                <div class="text-lg font-semibold text-slate-100">{{ props.githubProfile.division.name }}</div>
+                            </div>
+                            <component
+                                :is="getDivisionIcon(props.githubProfile.division)"
+                                :size="32"
+                                :style="{ color: props.githubProfile.division.color }"
+                                class="flex-shrink-0"
+                            />
                         </div>
 
                         <!-- DIVIDER -->
