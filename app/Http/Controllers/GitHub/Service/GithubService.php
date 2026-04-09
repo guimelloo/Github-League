@@ -26,6 +26,8 @@ class GithubService
         );
 
         $scoreData = $this->getScore($githubData['username']);
+        $divisionId = $this->getDivision($scoreData);
+        
         $profile = $this->githubClient->updateOrCreate(
             ['user_id' => $userId],
             [
@@ -34,6 +36,7 @@ class GithubService
                 'avatar_url' => $githubData['avatar'] ?? null,
                 'verified_at' => now(),
                 'score' => $scoreData ?? 0,
+                'division_id' => $divisionId,
             ]
         );
 
@@ -76,5 +79,21 @@ class GithubService
             // If any error occurs, return 0
             return 0;
         }
+    }
+
+    public function getDivision($score)
+    {
+        // Série A: 1.000.000+
+        if ($score >= 1000000) {
+            return 3; // ID da Série A
+        }
+        
+        // Série B: 100.000 - 900.000
+        if ($score >= 100000) {
+            return 2; // ID da Série B
+        }
+        
+        // Série C: 0 - 99.999
+        return 1; // ID da Série C
     }
 }
