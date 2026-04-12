@@ -1,14 +1,17 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import { Code2 } from 'lucide-vue-next';
+import { Code2, Search } from 'lucide-vue-next';
+import { ref, computed } from 'vue';
 
-defineProps({
+const props = defineProps({
     languageDivisions: {
         type: Object,
         required: true,
     },
 });
+
+const searchQuery = ref('');
 
 const predefinedColors = {
     'PHP': '#777BB4',
@@ -56,6 +59,23 @@ const getLanguageColor = (language) => {
     const colorIndex = hash % colorPalette.length;
     return colorPalette[colorIndex];
 };
+
+const filteredDivisions = computed(() => {
+    if (!searchQuery.value.trim()) {
+        return props.languageDivisions;
+    }
+
+    const query = searchQuery.value.toLowerCase();
+    const filtered = {};
+
+    Object.entries(props.languageDivisions).forEach(([language, profiles]) => {
+        if (language.toLowerCase().includes(query)) {
+            filtered[language] = profiles;
+        }
+    });
+
+    return filtered;
+});
 </script>
 
 <template>
@@ -74,10 +94,23 @@ const getLanguageColor = (language) => {
                     </p>
                 </div>
 
+                <!-- SEARCH BAR -->
+                <div class="mb-8">
+                    <div class="relative">
+                        <Search :size="20" class="absolute left-3 top-3 text-slate-500" />
+                        <input
+                            v-model="searchQuery"
+                            type="text"
+                            placeholder="Search languages..."
+                            class="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-500/20"
+                        />
+                    </div>
+                </div>
+
                 <!-- LANGUAGES GRID -->
-                <div v-if="Object.keys(languageDivisions).length > 0" class="space-y-8">
+                <div v-if="Object.keys(filteredDivisions).length > 0" class="space-y-8">
                     <div
-                        v-for="(profiles, language) in languageDivisions"
+                        v-for="(profiles, language) in filteredDivisions"
                         :key="language"
                         class="bg-slate-900 border border-slate-700 rounded-lg overflow-hidden shadow-lg"
                     >
@@ -159,7 +192,8 @@ const getLanguageColor = (language) => {
 
                 <!-- NO LANGUAGES STATE -->
                 <div v-else class="text-center py-16">
-                    <p class="text-slate-400">No language data available yet.</p>
+                    <p v-if="searchQuery" class="text-slate-400">No languages match your search.</p>
+                    <p v-else class="text-slate-400">No language data available yet.</p>
                 </div>
             </div>
         </div>

@@ -15,7 +15,6 @@ class LanguageDivisionService
 
     public function getLanguageDivisions()
     {
-        // Coletar todas as linguagens
         $allLanguages = [];
         $profiles = $this->githubProfile::with('user')
             ->whereNotNull('language_scores')
@@ -44,7 +43,7 @@ class LanguageDivisionService
             usort($profiles, function ($a, $b) {
                 return $b['score'] - $a['score'];
             });
-            
+
             $languageDivisions[$language] = array_slice($profiles, 0, 10);
         }
 

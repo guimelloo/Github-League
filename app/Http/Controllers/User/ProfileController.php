@@ -80,4 +80,20 @@ class ProfileController extends Controller
             'highestScoringUsers' => $highestScoringUsers,
         ]);
     }
+
+    public function show($githubUsername)
+    {
+        $userProfile = $this->service->getUserByGithubUsername($githubUsername);
+
+        return Inertia::render('UserProfile', [
+            'userProfile' => $userProfile,
+        ]);
+    }
+
+    public function search($query)
+    {
+        $profiles = $this->service->searchUsers($query);
+
+        return response()->json($profiles);
+    }
 }

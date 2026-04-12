@@ -34,9 +34,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/leaderboard', [ProfileController::class, 'leaderboard'])->name('leaderboard');
     Route::get('/divisions', [DivisionController::class, 'index'])->name('divisions');
     Route::get('/language-divisions', [LanguageDivisionController::class, 'index'])->name('language-divisions');
+    Route::get('/user/@{githubUsername}', [ProfileController::class, 'show'])->name('user.profile');
+    Route::get('/api/users/search/{query}', [ProfileController::class, 'search'])->name('users.search');
 });
 
 // GitHub callback - sem middleware auth (GitHub vai redirecionar aqui)
 Route::get('/auth/github/callback', [GithubProfileController::class, 'callback'])->name('github.callback');
 
 require __DIR__.'/auth.php';
+
