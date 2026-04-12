@@ -3,6 +3,7 @@
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\GitHub\GithubProfileController;
 use App\Http\Controllers\Divisions\DivisionController;
+use App\Http\Controllers\Divisions\LanguageDivisionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/leaderboard', [ProfileController::class, 'leaderboard'])->name('leaderboard');
     Route::get('/divisions', [DivisionController::class, 'index'])->name('divisions');
+    Route::get('/language-divisions', [LanguageDivisionController::class, 'index'])->name('language-divisions');
 });
 
 // GitHub callback - sem middleware auth (GitHub vai redirecionar aqui)

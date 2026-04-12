@@ -40,6 +40,12 @@ const showingNavigationDropdown = ref(false);
                             Divisions
                         </NavLink>
                         <NavLink
+                            :href="route('language-divisions')"
+                            :active="route().current('language-divisions')"
+                        >
+                            Languages
+                        </NavLink>
+                        <NavLink
                             :href="route('leaderboard')"
                             :active="route().current('leaderboard')"
                         >
@@ -86,6 +92,9 @@ const showingNavigationDropdown = ref(false);
                     </ResponsiveNavLink>
                     <ResponsiveNavLink :href="route('divisions')" :active="route().current('divisions')">
                         Divisions
+                    </ResponsiveNavLink>
+                    <ResponsiveNavLink :href="route('language-divisions')" :active="route().current('language-divisions')">
+                        Languages
                     </ResponsiveNavLink>
                     <ResponsiveNavLink :href="route('leaderboard')" :active="route().current('leaderboard')">
                         Leaderboard

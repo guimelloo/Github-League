@@ -14,6 +14,12 @@ class GithubProfile extends Model
         'verified_at',
         'score',
         'division_id',
+        'language_scores',
+        'top_language',
+    ];
+
+    protected $casts = [
+        'language_scores' => 'array',
     ];
 
     public function user()

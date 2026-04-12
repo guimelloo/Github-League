@@ -26,7 +26,10 @@ class GithubService
         );
 
         $scoreData = $this->getScore($githubData['username']);
-        $divisionId = $this->getDivision($scoreData);
+        $totalScore = $scoreData['total_score'] ?? 0;
+        $languageScores = $scoreData['languages'] ?? [];
+        $topLanguage = $scoreData['top_language'] ?? null;
+        $divisionId = $this->getDivision($totalScore);
         
         $profile = $this->githubClient->updateOrCreate(
             ['user_id' => $userId],
@@ -35,7 +38,9 @@ class GithubService
                 'github_token' => $githubData['token'] ?? null,
                 'avatar_url' => $githubData['avatar'] ?? null,
                 'verified_at' => now(),
-                'score' => $scoreData ?? 0,
+                'score' => $totalScore,
+                'language_scores' => $languageScores,
+                'top_language' => $topLanguage,
                 'division_id' => $divisionId,
             ]
         );
@@ -46,54 +51,109 @@ class GithubService
     public function getScore($username)
     {
         try {
-            $user = $this->client->api('user')->show($username);
             $repos = $this->client->api('user')->repositories($username);
 
-            if (empty($repos) || count($repos) === 0) {
-                return 0;
+            if (empty($repos)) {
+                return [
+                    'total_score' => 0,
+                    'languages' => [],
+                    'top_language' => null
+                ];
             }
 
-            $stars = 0;
-            $forks = 0;
-            $lines = 0;
+            $totalStars = 0;
+            $totalForks = 0;
+            $totalLines = 0;
+
+            $languageStats = [];
 
             foreach ($repos as $repo) {
-                $stars += $repo['stargazers_count'] ?? 0;
-                $forks += $repo['forks_count'] ?? 0;
+
+                $stars = $repo['stargazers_count'] ?? 0;
+                $forks = $repo['forks_count'] ?? 0;
+
+                $totalStars += $stars;
+                $totalForks += $forks;
 
                 try {
                     $languages = $this->client->api('repo')->languages(
                         $username,
                         $repo['name']
                     );
-                    $lines += array_sum($languages);
+
+                    $repoTotalLines = array_sum($languages);
+                    $totalLines += $repoTotalLines;
+
+                    foreach ($languages as $language => $bytes) {
+
+                        if (!isset($languageStats[$language])) {
+                            $languageStats[$language] = [
+                                'lines' => 0,
+                                'repos' => 0,
+                                'stars' => 0,
+                                'forks' => 0,
+                            ];
+                        }
+
+                        $languageStats[$language]['lines'] += $bytes;
+                        $languageStats[$language]['stars'] += $stars;
+                        $languageStats[$language]['forks'] += $forks;
+                        $languageStats[$language]['repos']++;
+                    }
+
                 } catch (\Exception $e) {
                     continue;
                 }
             }
 
-            $score = ($lines / count($repos)) * 2 + ($stars * 2) + $forks;
+            $totalScore = ($totalLines / count($repos)) * 2
+                        + ($totalStars * 2)
+                        + $totalForks;
 
-            return round($score);
+            $languageScores = [];
+            $topLanguage = null;
+            $maxLines = 0;
+
+            foreach ($languageStats as $language => $data) {
+
+                $score = ($data['lines'] / max(1, $data['repos'])) * 2
+                    + ($data['stars'] * 2)
+                    + $data['forks'];
+
+                $languageScores[$language] = round($score);
+
+                if ($data['lines'] > $maxLines) {
+                    $maxLines = $data['lines'];
+                    $topLanguage = $language;
+                }
+            }
+
+            return [
+                'total_score' => round($totalScore),
+                'languages' => $languageScores,
+                'top_language' => $topLanguage
+            ];
+
         } catch (\Exception $e) {
-            // If any error occurs, return 0
-            return 0;
+            return [
+                'total_score' => 0,
+                'languages' => [],
+                'top_language' => null
+            ];
         }
     }
 
     public function getDivision($score)
     {
-        // Série A: 1.000.000+
         if ($score >= 1000000) {
-            return 3; // ID da Série A
+            return 3;
         }
-        
-        // Série B: 100.000 - 900.000
+
         if ($score >= 100000) {
-            return 2; // ID da Série B
+            return 2;
         }
-        
-        // Série C: 0 - 99.999
-        return 1; // ID da Série C
+
+        return 1;
     }
 }
+
