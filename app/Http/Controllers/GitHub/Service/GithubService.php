@@ -30,7 +30,7 @@ class GithubService
         $languageScores = $scoreData['languages'] ?? [];
         $topLanguage = $scoreData['top_language'] ?? null;
         $divisionId = $this->getDivision($totalScore);
-        
+
         $profile = $this->githubClient->updateOrCreate(
             ['user_id' => $userId],
             [
@@ -116,7 +116,7 @@ class GithubService
 
             foreach ($languageStats as $language => $data) {
 
-                $score = ($data['lines'] / max(1, $data['repos'])) * 2
+                $score = ($data['lines'] / count($repos)) * 2
                     + ($data['stars'] * 2)
                     + $data['forks'];
 
