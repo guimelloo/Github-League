@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
-import { Trophy, Medal, Award, Flame, X } from 'lucide-vue-next';
+import { Trophy, Medal, Award, X } from 'lucide-vue-next';
 
 const props = defineProps({
     users: Array,
@@ -21,7 +21,6 @@ const highlights = computed(() => {
         score: user.github_profile?.score || 0,
         avatar_url: user.github_profile?.avatar_url,
         github_username: user.github_profile?.github_username,
-        streak: user.streak || 0,
     }));
 });
 
@@ -50,13 +49,13 @@ const getMedalColor = (position) => {
     return 'text-blue-500';
 };
 
-// Detectar quando o usuário atual está no top 3 com streak
+// Detectar quando o usuário atual está no top 3
 watch(() => highlights.value, (newHighlights) => {
     const currentUserId = page.props.auth.user?.id;
-    const userInTop3 = newHighlights.find(u => u.id === currentUserId);
-    
-    if (userInTop3 && userInTop3.streak > 0) {
-        currentUserPosition.value = newHighlights.findIndex(u => u.id === currentUserId) + 1;
+    const userPosition = newHighlights.findIndex(u => u.id === currentUserId);
+
+    if (userPosition !== -1) {
+        currentUserPosition.value = userPosition + 1;
         showPositionModal.value = true;
     }
 }, { immediate: true });
@@ -109,8 +108,8 @@ watch(() => highlights.value, (newHighlights) => {
                             </a>
                         </div>
 
-                        <!-- NAME WITH STREAK BADGE -->
-                        <div class="mb-1 flex items-center justify-center gap-2">
+                        <!-- NAME -->
+                        <div class="mb-1">
                             <a
                                 :href="`https://github.com/${player.github_username}`"
                                 target="_blank"
@@ -119,10 +118,6 @@ watch(() => highlights.value, (newHighlights) => {
                             >
                                 {{ player.name }}
                             </a>
-                            <div v-if="player.streak > 0" class="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/50 rounded-full">
-                                <Flame :size="14" class="text-orange-500" />
-                                <span class="text-xs font-bold text-orange-500">{{ player.streak }} day<span v-if="player.streak !== 1">s</span></span>
-                            </div>
                         </div>
 
                         <!-- GITHUB -->
@@ -215,7 +210,7 @@ watch(() => highlights.value, (newHighlights) => {
                 <!-- POSITION MODAL -->
                 <Transition name="fade">
                     <div v-if="showPositionModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                        <div class="bg-slate-900 border border-orange-500/50 rounded-lg p-8 max-w-md mx-4 relative">
+                        <div class="bg-slate-900 border border-blue-500/50 rounded-lg p-8 max-w-md mx-4 relative">
                             <!-- CLOSE BUTTON -->
                             <button
                                 @click="showPositionModal = false"
@@ -227,20 +222,22 @@ watch(() => highlights.value, (newHighlights) => {
                             <!-- CONTENT -->
                             <div class="text-center">
                                 <div class="mb-4 flex justify-center">
-                                    <Flame :size="48" class="text-orange-500 animate-pulse" />
+                                    <Trophy v-if="currentUserPosition === 1" :size="48" class="text-yellow-500" />
+                                    <Medal v-else-if="currentUserPosition === 2" :size="48" class="text-slate-400" />
+                                    <Award v-else :size="48" class="text-orange-500" />
                                 </div>
                                 <h2 class="text-2xl font-bold text-slate-100 mb-2">
-                                    On Fire! 🔥
+                                    You're in the Top 3! 🎉
                                 </h2>
                                 <p class="text-slate-300 mb-6">
-                                    You're in the <span class="font-bold text-orange-500">#{{ currentUserPosition }}</span> position with an amazing streak!
+                                    You're currently in <span class="font-bold text-blue-500">#{{ currentUserPosition }}</span> position in the leaderboard!
                                 </p>
-                                <div class="bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/50 rounded-lg p-4 mb-6">
-                                    <p class="text-sm text-slate-300">Keep up the great work and maintain your position!</p>
+                                <div class="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/50 rounded-lg p-4 mb-6">
+                                    <p class="text-sm text-slate-300">Keep improving your score to climb the rankings!</p>
                                 </div>
                                 <button
                                     @click="showPositionModal = false"
-                                    class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg transition"
+                                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition"
                                 >
                                     Got it!
                                 </button>
