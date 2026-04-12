@@ -48,9 +48,18 @@ class GithubService
         return $profile;
     }
 
-    public function getScore($username)
+    public function getScore($username, $token = null)
     {
         try {
+            // Autentica se o token foi passado
+            if ($token) {
+                $this->client->authenticate(
+                    $token,
+                    null,
+                    Client::AUTH_ACCESS_TOKEN
+                );
+            }
+
             $repos = $this->client->api('user')->repositories($username);
 
             if (empty($repos)) {

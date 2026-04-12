@@ -14,7 +14,9 @@ class UpdateLanguageScores extends Command
     public function handle()
     {
         $service = new GithubService();
-        $profiles = GithubProfile::whereNotNull('github_username')->get();
+        $profiles = GithubProfile::whereNotNull('github_username')
+            ->whereNotNull('github_token')
+            ->get();
 
         if ($profiles->isEmpty()) {
             $this->error('❌ No GitHub profiles found.');
@@ -29,7 +31,7 @@ class UpdateLanguageScores extends Command
 
         foreach ($profiles as $profile) {
             try {
-                $scoreData = $service->getScore($profile->github_username);
+                $scoreData = $service->getScore($profile->github_username, $profile->github_token);
                 $languageScores = $scoreData['languages'] ?? [];
                 $topLanguage = $scoreData['top_language'] ?? null;
                 $languageCount = count($languageScores);
