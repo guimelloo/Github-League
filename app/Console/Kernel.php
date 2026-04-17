@@ -16,6 +16,11 @@ class Kernel extends ConsoleKernel
             ->dailyAt('00:00')
             ->timezone('UTC')
             ->withoutOverlapping();
+
+        $schedule->command('score:update-daily')
+            ->dailyAt('01:00')
+            ->timezone('UTC')
+            ->withoutOverlapping();
     }
 
     /**

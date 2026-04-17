@@ -175,8 +175,8 @@ const createPixelEffect = () => {
                                 <div class="text-sm uppercase tracking-widest text-slate-500 font-medium mb-2">Top Language</div>
                                 <div class="text-lg font-semibold text-slate-100">{{ props.githubProfile.top_language }}</div>
                             </div>
-                            <Code2 
-                                :size="32" 
+                            <Code2
+                                :size="32"
                                 :style="{ color: getLanguageColor(props.githubProfile.top_language) }"
                                 class="flex-shrink-0"
                             />

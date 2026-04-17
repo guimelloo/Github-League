@@ -73,11 +73,16 @@ class GithubService
             $totalStars = 0;
             $totalForks = 0;
             $totalLines = 0;
+            $ownRepos = 0;
 
             $languageStats = [];
 
             foreach ($repos as $repo) {
+                if ($repo['fork'] === true) {
+                    continue;
+                }
 
+                $ownRepos++;
                 $stars = $repo['stargazers_count'] ?? 0;
                 $forks = $repo['forks_count'] ?? 0;
 
@@ -99,14 +104,10 @@ class GithubService
                             $languageStats[$language] = [
                                 'lines' => 0,
                                 'repos' => 0,
-                                'stars' => 0,
-                                'forks' => 0,
                             ];
                         }
 
                         $languageStats[$language]['lines'] += $bytes;
-                        $languageStats[$language]['stars'] += $stars;
-                        $languageStats[$language]['forks'] += $forks;
                         $languageStats[$language]['repos']++;
                     }
 
@@ -115,7 +116,16 @@ class GithubService
                 }
             }
 
-            $totalScore = ($totalLines / count($repos)) * 2
+
+            if ($ownRepos === 0) {
+                return [
+                    'total_score' => 0,
+                    'languages' => [],
+                    'top_language' => null
+                ];
+            }
+
+            $totalScore = ($totalLines / $ownRepos) * 2
                         + ($totalStars * 2)
                         + $totalForks;
 
@@ -124,10 +134,11 @@ class GithubService
             $maxLines = 0;
 
             foreach ($languageStats as $language => $data) {
+                $languagePercentage = $totalLines > 0 ? ($data['lines'] / $totalLines) : 0;
 
-                $score = ($data['lines'] / count($repos)) * 2
-                    + ($data['stars'] * 2)
-                    + $data['forks'];
+                $score = ($data['lines'] / $ownRepos) * 2
+                    + ($languagePercentage * $totalStars * 2)
+                    + ($languagePercentage * $totalForks);
 
                 $languageScores[$language] = round($score);
 
