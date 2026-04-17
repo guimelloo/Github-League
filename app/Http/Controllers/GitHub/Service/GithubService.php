@@ -125,9 +125,10 @@ class GithubService
                 ];
             }
 
-            $totalScore = ($totalLines / $ownRepos) * 2
-                        + ($totalStars * 2)
-                        + $totalForks;
+            // Calculate total score with proper scaling
+            $totalScore = ($totalLines / $ownRepos) * 50
+                        + ($totalStars * 100)
+                        + ($totalForks * 50);
 
             $languageScores = [];
             $topLanguage = null;
@@ -136,9 +137,11 @@ class GithubService
             foreach ($languageStats as $language => $data) {
                 $languagePercentage = $totalLines > 0 ? ($data['lines'] / $totalLines) : 0;
 
-                $score = ($data['lines'] / $ownRepos) * 2
-                    + ($languagePercentage * $totalStars * 2)
-                    + ($languagePercentage * $totalForks);
+                // Calculate language score with stronger scaling
+                // Weight: language's share of total score based on code contribution
+                $score = ($data['lines'] / $ownRepos) * 50
+                    + ($languagePercentage * $totalStars * 100)
+                    + ($languagePercentage * $totalForks * 50);
 
                 $languageScores[$language] = round($score);
 
