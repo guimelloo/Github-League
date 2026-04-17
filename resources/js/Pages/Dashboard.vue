@@ -3,6 +3,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref, onMounted, computed } from 'vue';
 import { Trophy, Award, Crown, Code2 } from 'lucide-vue-next';
+import AchievementBadge from '@/Components/AchievementBadge.vue';
+import TrophyShelf from '@/Components/TrophyShelf.vue';
+import { getBadgeByScore } from '@/utils/achievements';
 import gsap from 'gsap';
 
 const props = defineProps({
@@ -87,6 +90,14 @@ const githubStats = computed(() => {
     return {
         score: props.githubProfile?.score || 0,
     };
+});
+
+const topLanguageBadge = computed(() => {
+    if (!props.githubProfile?.top_language || !props.githubProfile?.language_scores) {
+        return null;
+    }
+    const score = props.githubProfile.language_scores[props.githubProfile.top_language] || 0;
+    return getBadgeByScore(props.githubProfile.top_language, score);
 });
 
 onMounted(() => {
@@ -180,6 +191,25 @@ const createPixelEffect = () => {
                                 :style="{ color: getLanguageColor(props.githubProfile.top_language) }"
                                 class="flex-shrink-0"
                             />
+                        </div>
+
+                        <!-- ACHIEVEMENT BADGE -->
+                        <div class="pt-2">
+                            <div v-if="topLanguageBadge" class="min-h-24 flex items-center">
+                                <AchievementBadge :badge="topLanguageBadge" />
+                            </div>
+                            <div v-else class="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center text-sm text-slate-400">
+                                <p class="mb-1">🎯 No badges unlocked yet</p>
+                                <p class="text-xs">Reach 100,000 points in <span class="text-slate-300 font-semibold">{{ props.githubProfile.top_language }}</span> to unlock your first badge</p>
+                            </div>
+                        </div>
+
+                        <!-- DIVIDER -->
+                        <div class="border-t border-slate-700"></div>
+
+                        <!-- TROPHY SHELF -->
+                        <div v-if="props.githubProfile.language_scores" class="pt-4">
+                            <TrophyShelf :language-scores="props.githubProfile.language_scores" />
                         </div>
 
                         <!-- DIVIDER -->
