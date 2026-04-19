@@ -8,6 +8,8 @@ Run this command in production to diagnose the issue:
 php artisan diagnose:badges {username}
 ```
 
+**Important**: The command is **`diagnose:badges`** (NOT just `diagnose`)
+
 Example:
 ```bash
 php artisan diagnose:badges guimelloo
