@@ -20,8 +20,10 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     $user = Auth::user();
+    $profile = $user->githubProfile?->load('division');
+    
     return Inertia::render('Dashboard', [
-        'githubProfile' => $user->githubProfile?->load('division'),
+        'githubProfile' => $profile,
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 

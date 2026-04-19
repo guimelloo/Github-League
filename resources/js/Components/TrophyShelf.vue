@@ -50,8 +50,14 @@ const props = defineProps({
 });
 
 const languageItems = computed(() => {
-    return Object.entries(props.languageScores)
-        .filter(([_, score]) => score >= 100000)
+    if (!props.languageScores || Object.keys(props.languageScores).length === 0) {
+        return [];
+    }
+    
+    const filtered = Object.entries(props.languageScores)
+        .filter(([_, score]) => score >= 100000);
+    
+    return filtered
         .map(([language, score]) => ({
             name: language,
             score: score,
