@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { defineProps, computed } from 'vue';
+import { defineProps, computed, onMounted } from 'vue';
 import AchievementBadge from './AchievementBadge.vue';
 import { getAllBadgesByLanguage, getLanguageColor } from '@/utils/achievements';
 
@@ -47,6 +47,18 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+});
+
+onMounted(() => {
+    if (props.languageScores && Object.keys(props.languageScores).length > 0) {
+        const filtered100k = Object.entries(props.languageScores).filter(([_, score]) => score >= 100000);
+        console.log('🏆 TrophyShelf Debug:', {
+            totalLanguages: Object.keys(props.languageScores).length,
+            languages: Object.keys(props.languageScores),
+            languages100k: filtered100k.length,
+            details: filtered100k.map(([lang, score]) => `${lang}: ${score.toLocaleString()}`)
+        });
+    }
 });
 
 const languageItems = computed(() => {

@@ -102,6 +102,18 @@ const topLanguageBadge = computed(() => {
 
 onMounted(() => {
     if (isGithubConnected(props.githubProfile)) {
+        // Debug log
+        if (props.githubProfile?.language_scores) {
+            const badgeCount = Object.values(props.githubProfile.language_scores).filter(s => s >= 100000).length;
+            console.log('🔍 Badge Debug:', {
+                username: props.githubProfile.github_username,
+                topLanguage: props.githubProfile.top_language,
+                languages: Object.keys(props.githubProfile.language_scores || {}),
+                languagesAbove100k: badgeCount,
+                topLanguageScore: props.githubProfile.language_scores[props.githubProfile.top_language],
+            });
+        }
+        
         // Animar score contador
         gsap.to(scoreCounter, {
             value: githubStats.value.score,

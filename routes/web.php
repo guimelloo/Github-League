@@ -43,5 +43,37 @@ Route::middleware('auth')->group(function () {
 // GitHub callback - sem middleware auth (GitHub vai redirecionar aqui)
 Route::get('/auth/github/callback', [GithubProfileController::class, 'callback'])->name('github.callback');
 
+// Debug routes (only in production for troubleshooting)
+Route::get('/debug/dashboard-data', function () {
+    $user = Auth::user();
+    if (!$user) {
+        return response()->json(['error' => 'Not authenticated'], 401);
+    }
+    
+    $profile = $user->githubProfile;
+    if (!$profile) {
+        return response()->json(['error' => 'No GitHub profile'], 404);
+    }
+    
+    // Load division
+    $profile->load('division');
+    
+    // Check what would be sent to Inertia
+    return response()->json([
+        'raw_profile' => [
+            'id' => $profile->id,
+            'github_username' => $profile->github_username,
+            'score' => $profile->score,
+            'top_language' => $profile->top_language,
+            'language_scores_type' => gettype($profile->language_scores),
+            'language_scores' => $profile->language_scores,
+            'language_scores_count' => count($profile->language_scores ?? []),
+        ],
+        'visible_attributes' => $profile->getVisible(),
+        'hidden_attributes' => $profile->getHidden(),
+        'serialized_for_inertia' => $profile->toArray(),
+    ], 200, [], JSON_PRETTY_PRINT);
+})->middleware(['auth', 'verified'])->name('debug.dashboard-data');
+
 require __DIR__.'/auth.php';
 
