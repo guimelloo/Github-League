@@ -1,8 +1,8 @@
 export const BADGE_TIERS = [
-    { score: 100000, tier: 'warrior', icon: '⚔️', color: '#FF9F43' },
-    { score: 300000, tier: 'master', icon: '🎯', color: '#6C63FF' },
-    { score: 500000, tier: 'legend', icon: '⭐', color: '#FF6B9D' },
-    { score: 1000000, tier: 'god', icon: '👑', color: '#FFD700' },
+    { score: 100000, tier: 'warrior', icon: 'I', color: '#FF9F43', label: 'Warrior' },
+    { score: 300000, tier: 'master', icon: 'II', color: '#6C63FF', label: 'Master' },
+    { score: 500000, tier: 'legend', icon: 'III', color: '#FF6B9D', label: 'Legend' },
+    { score: 1000000, tier: 'god', icon: 'IV', color: '#FFD700', label: 'God' },
 ];
 
 export const getBadgeByScore = (language, score) => {
@@ -11,17 +11,18 @@ export const getBadgeByScore = (language, score) => {
     }
 
     const badge = [...BADGE_TIERS].reverse().find(b => score >= b.score);
-    
+
     if (badge) {
         return {
             tier: badge.tier,
-            title: `${badge.tier.charAt(0).toUpperCase() + badge.tier.slice(1)} of ${language}`,
+            title: `${badge.label} of ${language}`,
             description: `${badge.score.toLocaleString()} points reached`,
             icon: badge.icon,
             color: badge.color,
             score: score,
             minScore: badge.score,
             isUnlocked: true,
+            language: language,
         };
     }
 
@@ -33,13 +34,14 @@ export const getAllBadgesByLanguage = (language, score) => {
         const isUnlocked = score >= badge.score;
         return {
             tier: badge.tier,
-            title: `${badge.tier.charAt(0).toUpperCase() + badge.tier.slice(1)} of ${language}`,
+            title: `${badge.label} of ${language}`,
             description: `Reach ${badge.score.toLocaleString()} points`,
             icon: badge.icon,
             color: badge.color,
             minScore: badge.score,
             isUnlocked: isUnlocked,
             score: score,
+            language: language,
         };
     });
 };

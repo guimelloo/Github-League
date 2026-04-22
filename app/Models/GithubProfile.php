@@ -21,7 +21,7 @@ class GithubProfile extends Model
     protected $casts = [
         'language_scores' => 'array',
     ];
-    
+
     protected $hidden = [
         'github_token',
     ];

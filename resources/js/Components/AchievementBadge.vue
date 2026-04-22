@@ -1,9 +1,9 @@
 <template>
-    <div 
+    <div
         class="relative group inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all"
         :class="badge.isUnlocked ? 'cursor-pointer hover:scale-105' : 'opacity-40 cursor-not-allowed'"
-        :style="{ 
-            borderColor: badge.color, 
+        :style="{
+            borderColor: badge.color,
             backgroundColor: badge.isUnlocked ? `${badge.color}15` : '#64748B20'
         }"
     >

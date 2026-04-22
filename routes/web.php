@@ -21,7 +21,7 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     $user = Auth::user();
     $profile = $user->githubProfile?->load('division');
-    
+
     return Inertia::render('Dashboard', [
         'githubProfile' => $profile,
     ]);
@@ -49,15 +49,15 @@ Route::get('/debug/dashboard-data', function () {
     if (!$user) {
         return response()->json(['error' => 'Not authenticated'], 401);
     }
-    
+
     $profile = $user->githubProfile;
     if (!$profile) {
         return response()->json(['error' => 'No GitHub profile'], 404);
     }
-    
+
     // Load division
     $profile->load('division');
-    
+
     // Check what would be sent to Inertia
     return response()->json([
         'raw_profile' => [

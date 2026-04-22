@@ -30,6 +30,7 @@
         "lucide-react": "^1.7.0",
         "lucide-vue-next": "^1.0.0",
         "react-achievements": "^3.9.3",
+        "rpg-awesome": "^0.2.0",
         "tailwind-merge": "^3.5.0",
         "three": "^0.183.2",
         "vue-confetti": "^2.3.0",

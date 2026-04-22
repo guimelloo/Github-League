@@ -13,7 +13,7 @@ class DebugBadges extends Command
     public function handle()
     {
         $profile = GithubProfile::where('github_username', 'guimelloo')->first();
-        
+
         if (!$profile) {
             $this->error('Profile not found');
             return;
@@ -24,7 +24,7 @@ class DebugBadges extends Command
         $this->line('Top Language: ' . $profile->top_language);
         $this->line('Language Scores Type: ' . gettype($profile->language_scores));
         $this->line('Language Scores Count: ' . count($profile->language_scores ?? []));
-        
+
         $this->info('\nLanguage Scores:');
         foreach ($profile->language_scores ?? [] as $language => $score) {
             $this->line("  {$language}: {$score}");
@@ -34,7 +34,7 @@ class DebugBadges extends Command
         $filtered = collect($profile->language_scores ?? [])
             ->filter(fn($score) => $score >= 100000)
             ->toArray();
-        
+
         $this->line('Filtered languages (100k+): ' . count($filtered));
         foreach ($filtered as $language => $score) {
             $this->line("  ✓ {$language}: {$score}");
